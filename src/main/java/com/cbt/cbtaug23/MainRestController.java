@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1")
@@ -29,7 +30,19 @@ public class MainRestController
     ProductRepository productRepository;
 
     @Autowired
+    OrderRepository orderRepository;
+
+    @Autowired
+    OrderstatusRepository orderstatusRepository;
+
+    @Autowired
     FullUserDetailService fullUserDetailService;
+
+    @Autowired
+    FullProductOfferService fullProductOfferService;
+
+    @Autowired
+    OrderService orderService;
 
     @GetMapping("greet")
     public ResponseEntity<String> greet()
@@ -99,9 +112,50 @@ public class MainRestController
     }
 
     @GetMapping("get/product/all")
-    public List<Product> getProducts()
+    public List<Product> getAllProducts()
     {
         return productRepository.findAll();
+    }
+
+    @GetMapping("get/offer/all")
+    public List<FullProductOffer> getAllOffers()
+    {
+         List<Productoffer> productofferList =  productofferRepository.findAll();
+
+         return productofferList.stream().map(productoffer ->
+                 { return fullProductOfferService.composeFullProductOffer(productoffer.getId());}
+                        ).collect(Collectors.toList());
+
+    }
+
+    @PostMapping("save/order")
+    public ResponseEntity<Order> saveOrder(@RequestBody Order order)
+    {
+        order.setOrderid(String.valueOf((int)(Math.random()*100000)));
+        orderRepository.save(order);
+        Orderstatus orderstatus = new Orderstatus();
+        orderstatus.setId(String.valueOf((int)(Math.random()*100000)));
+        orderstatus.setOrderid(order.getOrderid());
+        orderstatus.setStatus("OPEN");
+        orderstatusRepository.save(orderstatus);
+        return new ResponseEntity<>(order,HttpStatus.OK);
+    }
+
+    @GetMapping("get/order/all/sellerwise/{sellername}")
+    public ResponseEntity<List<FullOrder>> getAllOrderSellerwise(@PathVariable String sellername,
+                                                       @RequestParam int count,
+                                                       @RequestParam String status)
+    {
+        return new ResponseEntity<>(orderService.getOrdersSellerwise(sellername),HttpStatus.OK);
+    }
+
+    @PostMapping("save/order/status")
+    public ResponseEntity<Orderstatus> saveOrderStatus(@RequestBody Orderstatus orderstatus)
+    {
+        orderstatus.setId(String.valueOf((int)(Math.random()*100000)));
+        orderstatusRepository.save(orderstatus);
+
+        return new ResponseEntity<>(orderstatus,HttpStatus.OK);
     }
 
 
