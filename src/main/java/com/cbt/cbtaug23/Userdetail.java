@@ -24,6 +24,28 @@ public class Userdetail {
     @Column(name = "phone", length = 50)
     private String phone;
 
+    @Column(name = "city", length = 50)
+    private String city;
+
+    @Column(name = "country", length = 50)
+    private String country;
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getUsername() {
         return username;
     }

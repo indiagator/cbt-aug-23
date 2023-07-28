@@ -36,6 +36,21 @@ public class MainRestController
     OrderstatusRepository orderstatusRepository;
 
     @Autowired
+    PaymentRepository paymentRepository;
+
+    @Autowired
+    PortRepository portRepository;
+
+    @Autowired
+    UserportlinkRepository userportlinkRepository;
+
+    @Autowired
+    OrderportlinkRepository orderportlinkRepository;
+
+    @Autowired
+    OfferportlinkRepository offerportlinkRepository;
+
+    @Autowired
     FullUserDetailService fullUserDetailService;
 
     @Autowired
@@ -43,6 +58,9 @@ public class MainRestController
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    PaymentService paymentService;
 
     @GetMapping("greet")
     public ResponseEntity<String> greet()
@@ -155,8 +173,54 @@ public class MainRestController
         orderstatus.setId(String.valueOf((int)(Math.random()*100000)));
         orderstatusRepository.save(orderstatus);
 
+        Payment payment = new Payment();
+        payment.setId(String.valueOf((int)(Math.random()*100000)));
+        payment.setOrderid(orderstatus.getOrderid());
+        payment.setOfferid(orderRepository.findById(orderstatus.getOrderid()).get().getOfferid());
+        payment.setStatus("DUE");
+
+        paymentRepository.save(payment);
+
         return new ResponseEntity<>(orderstatus,HttpStatus.OK);
     }
+
+    @GetMapping("get/payment/buyerwise/{buyername}")
+    public List<FullPaymentStatus> getPaymentStatusBuyerwise(@PathVariable String buyername)
+    {
+        return paymentService.getOrdersDuePayment(buyername);
+    }
+
+
+    @GetMapping("get/port/all")
+    public List<Port> getAllPorts()
+    {
+        return portRepository.findAll();
+    }
+
+    @PostMapping("save/user/port")
+    public ResponseEntity<Userportlink> saveUserPort(@RequestBody Userportlink userportlink)
+    {
+        userportlink.setLinkid(String.valueOf((int)(Math.random()*100000)));
+        userportlinkRepository.save(userportlink);
+        return new ResponseEntity<>(userportlink,HttpStatus.OK);
+    }
+
+    @PostMapping("save/order/port")
+    public ResponseEntity<Orderportlink>  saveOrderPort(@RequestBody Orderportlink orderportlink)
+    {
+        orderportlink.setId(String.valueOf((int)(Math.random()*100000)));
+        orderportlinkRepository.save(orderportlink);
+        return new ResponseEntity<>(orderportlink,HttpStatus.OK);
+    }
+
+    @PostMapping("save/offer/port")
+    public ResponseEntity<Offerportlink>  saveOfferPort(@RequestBody Offerportlink offerportlink)
+    {
+        offerportlink.setId(String.valueOf((int)(Math.random()*100000)));
+        offerportlinkRepository.save(offerportlink);
+        return new ResponseEntity<>(offerportlink,HttpStatus.OK);
+    }
+
 
 
 }
