@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.cbt</groupId>
     <artifactId>cbtaug23</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>cbtaug23</name>
     <description>cbtaug23</description>
     <properties>
@@ -39,6 +39,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
